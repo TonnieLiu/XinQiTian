@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<array>
+		<dict>
+			<key>icon</key>
+			<string>icon_预约</string>
+			<key>name</key>
+			<string>我的预约</string>
+			<key>link</key>
+			<string>http://103.254.67.7/XqUserAPI/mybooklist</string>
+		</dict>
+		<dict>
+			<key>icon</key>
+			<string>icon_活动</string>
+			<key>name</key>
+			<string>我的活动</string>
+			<key>link</key>
+			<string>http://103.254.67.7/XqTansuoAPI/myactivity/userid</string>
+		</dict>
+		<dict>
+			<key>icon</key>
+			<string>icon_测试</string>
+			<key>name</key>
+			<string>我的测试</string>
+			<key>link</key>
+			<string>http://103.254.67.7/XqUserAPI/ceshiguanli</string>
+		</dict>
+	</array>
+	<array>
+		<dict>
+			<key>icon</key>
+			<string>icon_会员专区</string>
+			<key>name</key>
+			<string>会员专区</string>
+			<key>link</key>
+			<string></string>
+		</dict>
+	</array>
+	<array>
+		<dict>
+			<key>icon</key>
+			<string>icon_意见反馈</string>
+			<key>name</key>
+			<string>意见反馈</string>
+			<key>link</key>
+			<string></string>
+		</dict>
+	</array>
+</array>
+</plist>

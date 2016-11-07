@@ -1,0 +1,20 @@
+//
+//  RollPhotoView.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "RollPhotoView.h"
+
+@interface RollPhotoView ()
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *height;
+
+@end
+
+@implementation RollPhotoView
+
+@end

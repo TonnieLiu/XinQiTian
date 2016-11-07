@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>57AC9276-D8C4-4EC3-B3D9-84239E719B94</string>
+	<key>IDESourceControlProjectName</key>
+	<string>心期天</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>b7dbf309-b279-4877-bbaf-b11b041e3483++4532</key>
+		<string>svn://10.2.8.8/1518/1518036/%25252525252525252525252525252525252525252525252525E5%25252525252525252525252525252525252525252525252525BF%2525252525252525252525252525252525252525252525252583%25252525252525252525252525252525252525252525252525E6%252525252525252525252525252525252525252525252525259C%252525252525252525252525252525252525252525252525259F%25252525252525252525252525252525252525252525252525E5%25252525252525252525252525252525252525252525252525A4%25252525252525252525252525252525252525252525252525A9</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>心期天.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>b7dbf309-b279-4877-bbaf-b11b041e3483++4532</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>b7dbf309-b279-4877-bbaf-b11b041e3483++4532</key>
+		<string>svn://10.2.8.8/1518/1518036</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>svn://10.2.8.8/1518/1518036/%25252525252525252525252525252525252525252525252525E5%25252525252525252525252525252525252525252525252525BF%2525252525252525252525252525252525252525252525252583%25252525252525252525252525252525252525252525252525E6%252525252525252525252525252525252525252525252525259C%252525252525252525252525252525252525252525252525259F%25252525252525252525252525252525252525252525252525E5%25252525252525252525252525252525252525252525252525A4%25252525252525252525252525252525252525252525252525A9/%E5%BF%83%E6%9C%9F%E5%A4%A9.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>b7dbf309-b279-4877-bbaf-b11b041e3483++4532</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>b7dbf309-b279-4877-bbaf-b11b041e3483++4532</string>
+			<key>IDESourceControlWCCName</key>
+			<string>%E5%BF%83%E6%9C%9F%E5%A4%A9-check</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "b7dbf309-b279-4877-bbaf-b11b041e3483++4532",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "b7dbf309-b279-4877-bbaf-b11b041e3483++4532" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "b7dbf309-b279-4877-bbaf-b11b041e3483++4532" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "57AC9276-D8C4-4EC3-B3D9-84239E719B94",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "b7dbf309-b279-4877-bbaf-b11b041e3483++4532" : "%E5%BF%83%E6%9C%9F%E5%A4%A9-check"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "心期天",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "心期天.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/10.2.8.8\/1518\/1518036",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "b7dbf309-b279-4877-bbaf-b11b041e3483++4532"
+    }
+  ]
+}

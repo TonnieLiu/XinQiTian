@@ -1,0 +1,20 @@
+//
+//  ContentModel.h
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "JSONModel.h"
+#import "DetailModel.h"
+
+@interface ContentModel : JSONModel
+@property(nonatomic,copy)NSString *content;//,
+@property(nonatomic,copy)NSString *hugnum;// @property(nonatomic,copy)NSString *3@property(nonatomic,copy)NSString *,
+@property(nonatomic,copy)NSString *message;// @property(nonatomic,copy)NSString *请求成功@property(nonatomic,copy)NSString *,
+@property(nonatomic,copy)NSString *replynum;// @property(nonatomic,copy)NSString *1@property(nonatomic,copy)NSString *,
+@property(nonatomic,copy)NSString *status;// @property(nonatomic,copy)NSString *1@property(nonatomic,copy)NSString *,
+@property(nonatomic,copy)NSString *ziticolor;// @property(nonatomic,copy)NSString *black@property(nonatomic,copy)NSString *
+@property(nonatomic,strong)NSMutableArray<DetailModel> *list;
+@end

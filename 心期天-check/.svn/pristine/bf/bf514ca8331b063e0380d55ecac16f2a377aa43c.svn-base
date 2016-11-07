@@ -1,0 +1,180 @@
+//
+//  ExploreViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "ExploreViewController.h"
+#import "ActivityCell.h"
+#import "ActivityModel.h"
+#import "MJRefresh.h"
+#import "FMListModel.h"
+#import "FMModel.h"
+#import "ExploreCell.h"
+#import "FMListViewController.h"
+
+@interface ExploreViewController ()
+<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lengthLabel;
+@property (weak, nonatomic) IBOutlet UILabel *currentLabel;
+@property (nonatomic,strong)NSMutableArray *dataArr;
+
+//@property (nonatomic,strong)ExploreHeaderView *headerView;
+@property (nonatomic,strong)NSMutableArray *fmlistArr;
+@property (nonatomic,strong)NSDictionary *testDict;
+
+@property (nonatomic,assign)NSInteger type;
+
+@end
+
+@implementation ExploreViewController
+-(NSDictionary *)testDict{
+    if (!_testDict) {
+        _testDict = [NSDictionary new];
+    }
+    return _testDict;
+}
+
+-(NSMutableArray *)fmlistArr{
+    if (!_fmlistArr) {
+        _fmlistArr = [NSMutableArray new];
+    }
+    return _fmlistArr;
+}
+-(NSMutableArray *)dataArr{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+#pragma mark-生命周期
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.type = 1;
+    //self.tabBarController.tabBar.hidden = YES;
+    // Do any additional setup after loading the view.
+    [self createHeaderView];
+    [self requestData];
+}
+#pragma mark-网络数据相关
+- (void)requestData{
+    [LJHttpManager get:KACTIVITY_URL parameters:nil complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            if (self.tableView.header.isRefreshing) {
+                [self.dataArr removeAllObjects];
+            }
+            for (NSDictionary *dict in responseObject[@"data"]) {
+                ActivityModel *mode = [[ActivityModel alloc] initWithDictionary:dict error:nil];
+                [self.dataArr addObject:mode];
+            }
+            [self.tableView.header endRefreshing];
+            [self.tableView reloadData];
+        }
+    }];
+//    [LJHttpManager get:KFMLIST_URL parameters:nil complement:^(id responseObject, NSError *error) {
+//        
+//    }];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"ExplorePlist" ofType:@"plist"];
+    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:path];
+    //NSLog(@"%@",dict);
+    self.testDict = dict;
+    
+}
+#pragma mark-头部视图
+- (void)createHeaderView{
+    self.tableView.header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [self requestData];
+    }];
+//    self.headerView = [[NSBundle mainBundle] loadNibNamed:@"ExploreHeaderView" owner:self options:0][0];
+//    //view.frame = CGRectMake(0, 0, 320, KViewHeigth(view));
+//    self.tableView.tableHeaderView = self.headerView;
+    [LJHttpManager get:KFMLIST_URL parameters:nil complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            for (NSDictionary *dict in responseObject[@"data"]) {
+                FMListModel *mode = [[FMListModel alloc] initWithDictionary:dict error:nil];
+                [self.fmlistArr addObject:mode];
+            }
+            FMListModel *fenleiMode = self.fmlistArr[arc4random() % self.fmlistArr.count];
+            [LJHttpManager get:KFMDETAIL_URL parameters:@{@"fmid":[fenleiMode.fmidlist[arc4random() % fenleiMode.fmidlist.count] userId],@"fenleiid":fenleiMode.userId} complement:^(id responseObject, NSError *error) {
+                if (error) {
+                    NSLog(@"error = %@",error);
+                } else {
+                    FMModel *detailMode = [[FMModel alloc] initWithDictionary:responseObject[@"data"] error:nil];
+                    //[self.headerView refreshUI:detailMode];
+                    self.titleLabel.text = detailMode.list.title;
+                    self.lengthLabel.text = detailMode.mp3length;
+                    self.headerImageView.layer.cornerRadius = 35;
+                    [LJHttpManager setImageView:self.headerImageView withUrl:detailMode.list.photo];
+                }
+               
+            }];
+        }
+    }];
+   
+    
+}
+#pragma mark-UITableView代理方法
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (self.type == 1) {
+        return self.dataArr.count;
+    } else {
+        return 4;
+    }
+    
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.type == 1) {
+        return 90;
+    } else {
+        return 35;
+    }
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.type == 1) {
+        ActivityCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActivityCell"];
+        [cell refreshUI:self.dataArr[indexPath.row]];
+        return cell;
+
+    } else {
+        ExploreCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ExploreCell"];
+        if (self.type == 2) {
+            [cell refreshUI:self.testDict[@"test"][indexPath.row]];
+        } else {
+            [cell refreshUI:self.testDict[@"speed"][indexPath.row]];
+        }
+        return cell;
+    }
+}
+#pragma mark-btn点击事件
+- (IBAction)playAction:(UIButton *)sender {
+    sender.selected = !sender.selected;
+}
+- (IBAction)pushToFMList:(id)sender {
+    FMListViewController *ctl = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"FMLIST"];
+    ctl.dataArr = [self.fmlistArr mutableCopy];
+    ctl.title = @"心晴FM";
+    [self.navigationController pushViewController:ctl animated:YES];
+}
+- (IBAction)changeTableCell:(UIButton *)sender {
+    for (NSInteger i = 11; i < 14; i ++) {
+        UIButton *btn = (UIButton *)[self.view viewWithTag:i];
+        btn.selected = NO;
+    }
+    sender.selected = !sender.selected;
+    self.type = sender.tag - 10;
+    [self.tableView reloadData];
+}
+
+
+
+
+@end

@@ -1,0 +1,75 @@
+//
+//  RollPhotoView.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "RollPhotoView.h"
+#import "RollPhotoModel.h"
+
+@interface RollPhotoView ()
+<UIScrollViewDelegate>
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *height;
+@property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (nonatomic,strong)NSMutableArray *dataArr;
+@end
+
+@implementation RollPhotoView
+-(NSMutableArray *)dataArr{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+-(void)awakeFromNib{
+    self.width.constant = KMainScreenWidth * 3;
+    self.height.constant = KMainScreenWidth / 2;
+}
+-(void)refreshUI:(NSArray *)arr{
+    self.dataArr = [arr mutableCopy];
+    for (RollPhotoModel *mode in self.dataArr) {
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(KMainScreenWidth *[self.dataArr indexOfObject:mode], 0, KMainScreenWidth, KMainScreenWidth / 2)];
+        [LJHttpManager setImageView:imageView withUrl:[NSString stringWithFormat:@"%@%@",KHOST_URL,mode.photo]];
+        [self.contentView addSubview:imageView];
+        imageView.tag = 10 + [self.dataArr indexOfObject:mode];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        [imageView addGestureRecognizer:tapGes];
+        imageView.userInteractionEnabled = YES;
+    }
+    self.scrollView.contentOffset = CGPointMake(KMainScreenWidth, 0);
+    [[NSRunLoop currentRunLoop] addTimer:[NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(changePhoto) userInfo:nil repeats:YES] forMode:NSRunLoopCommonModes];
+}
+- (void)changePhoto{
+    [self.scrollView setContentOffset:CGPointMake(KMainScreenWidth * 2, 0) animated:YES];
+}
+- (void)tapAction:(UIGestureRecognizer *)ges{
+    RollPhotoModel *mode = self.dataArr[ges.view.tag - 10];
+    self.block(mode.linkid);
+}
+- (void)updatePhoto{
+    for (NSInteger i = 0; i < self.dataArr.count; i ++) {
+        UIImageView *imageView = (UIImageView *)[self.contentView viewWithTag:i + 10];
+        [LJHttpManager setImageView:imageView withUrl:[NSString stringWithFormat:@"%@%@",KHOST_URL,[self.dataArr[i] photo]]];
+    }
+}
+#pragma mark-UIScrollViewDelegate
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (scrollView.contentOffset.x <= 0) {
+        id obj = [self.dataArr lastObject];
+        [self.dataArr insertObject:obj atIndex:0];
+        [self.dataArr removeLastObject];
+        scrollView.contentOffset = CGPointMake(KMainScreenWidth, 0);
+        [self updatePhoto];
+    } else if (scrollView.contentOffset.x >= KMainScreenWidth * 2) {
+        id obj = self.dataArr[0];
+        [self.dataArr addObject:obj];
+        [self.dataArr removeObjectAtIndex:0];
+        scrollView.contentOffset = CGPointMake(KMainScreenWidth, 0);
+        [self updatePhoto];
+    }
+}
+@end

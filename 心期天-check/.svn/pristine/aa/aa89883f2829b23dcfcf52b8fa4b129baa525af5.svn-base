@@ -1,0 +1,79 @@
+//
+//  ExploreViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "ExploreViewController.h"
+#import "ExploreHeaderView.h"
+#import "ActivityCell.h"
+#import "ActivityModel.h"
+#import "MJRefresh.h"
+
+@interface ExploreViewController ()
+<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,strong)NSMutableArray *dataArr;
+@end
+
+@implementation ExploreViewController
+-(NSMutableArray *)dataArr{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+#pragma mark-生命周期
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    [self createHeaderView];
+    [self requestData];
+}
+#pragma mark-网络数据相关
+- (void)requestData{
+    [LJHttpManager get:KACTIVITY_URL parameters:nil complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            if (self.tableView.header.isRefreshing) {
+                [self.dataArr removeAllObjects];
+            }
+            for (NSDictionary *dict in responseObject[@"data"]) {
+                ActivityModel *mode = [[ActivityModel alloc] initWithDictionary:dict error:nil];
+                [self.dataArr addObject:mode];
+            }
+            [self.tableView.header endRefreshing];
+            [self.tableView reloadData];
+        }
+    }];
+//    [LJHttpManager get:KFMLIST_URL parameters:nil complement:^(id responseObject, NSError *error) {
+//        
+//    }];
+}
+#pragma mark-头部视图
+- (void)createHeaderView{
+    self.tableView.header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [self requestData];
+    }];
+    ExploreHeaderView *view = [[NSBundle mainBundle] loadNibNamed:@"ExploreHeaderView" owner:self options:0][0];
+    //view.frame = CGRectMake(0, 0, 320, KViewHeigth(view));
+    self.tableView.tableHeaderView = view;
+    
+}
+#pragma mark-UITableView代理方法
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return self.dataArr.count;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    ActivityCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActivityCell"];
+    [cell refreshUI:self.dataArr[indexPath.row]];
+    return cell;
+}
+
+
+
+
+@end

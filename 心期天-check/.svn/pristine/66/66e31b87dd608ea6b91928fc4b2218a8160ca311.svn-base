@@ -1,0 +1,54 @@
+//
+//  HomeViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "HomeViewController.h"
+#import "HomeTableViewCell.h"
+#import "HotProblemCell.h"
+
+@interface HomeViewController ()
+<UITableViewDataSource,UITableViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@end
+
+@implementation HomeViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self requestData];
+}
+- (void)requestData{
+    
+}
+
+
+#pragma mark-UITableView代理方法
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (section == 0) {
+        return 1;
+    } else {
+      return 4;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        HomeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HomeTableViewCell"];
+        return cell;
+    } else {
+        HotProblemCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HotProblemCell"];
+        return cell;
+    }
+    
+}
+
+
+@end

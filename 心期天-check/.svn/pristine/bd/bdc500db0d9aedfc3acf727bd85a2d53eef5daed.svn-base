@@ -1,0 +1,36 @@
+//
+//  Address.h
+//  心期天-项目-1.0
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#ifndef _______1_0_Address_h
+#define _______1_0_Address_h
+
+//主页
+#define KHOST_URL @"http://103.254.67.7"
+//首页-上方图片滚动
+#define KROLLPHOTO_URL @"http://103.254.67.7/XqCounselAPI/rollphoto"
+//首页-专家
+#define KCONDIS_URL @"http://103.254.67.7/XqCounselAPI/condisplay"
+//首页-热点问题
+#define KHOTPREBLEM_URL @"http://103.254.67.7/XqCounselAPI/hotproblem"
+//首页-图片跳转
+//http://103.254.67.7/XqTansuoAPI/essayinfo?essayid=201
+#define KPHOTO_URL @"http://103.254.67.7/XqTansuoAPI/essayinfo"
+
+//详情
+//http://103.254.67.7/XqWoliaoAPI/remind?woliaoid=842
+#define KDETAIL_URL @"http://103.254.67.7/XqWoliaoAPI/remind"
+//详情-评论
+//http://103.254.67.7/XqWoliaoAPI/woliaoreply?content=%E7%9A%84%E7%9A%84&userid=&woliaoId=842
+#define KCOMMENT_URL @"http://103.254.67.7/XqWoliaoAPI/woliaoreply"
+//暖窝
+//http://103.254.67.7/XqWoliaoAPI/woliaolist?page=1&userid=&usertype=1
+#define KNUANWO_URL @"http://103.254.67.7/XqWoliaoAPI/woliaolist"
+//点赞
+//http://103.254.67.7/XqWoliaoAPI/hug/contentid/912/userid/9466/usertype/1
+#define KHUG_URL @"http://103.254.67.7/XqWoliaoAPI/hug"
+#endif

@@ -1,0 +1,39 @@
+//
+//  RollPhotoView.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "RollPhotoView.h"
+#import "RollPhotoModel.h"
+
+@interface RollPhotoView ()
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *height;
+@property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (nonatomic,strong)NSMutableArray *dataArr;
+@end
+
+@implementation RollPhotoView
+-(NSMutableArray *)dataArr{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+-(void)awakeFromNib{
+    self.width.constant = KMainScreenWidth * 3;
+    self.height.constant = KMainScreenWidth / 2;
+}
+-(void)refreshUI:(NSArray *)arr{
+    self.dataArr = [arr mutableCopy];
+    for (RollPhotoModel *mode in self.dataArr) {
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(KMainScreenWidth *[self.dataArr indexOfObject:mode], 0, KMainScreenWidth, KMainScreenWidth / 2)];
+        [LJHttpManager setImageView:imageView withUrl:[NSString stringWithFormat:@"%@%@",KHOST_URL,mode.photo]];
+        [self.contentView addSubview:imageView];
+    }
+}
+@end

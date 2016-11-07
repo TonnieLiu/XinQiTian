@@ -1,0 +1,287 @@
+//
+//  ExploreViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "ExploreViewController.h"
+#import "ActivityCell.h"
+#import "ActivityModel.h"
+#import "MJRefresh.h"
+#import "FMListModel.h"
+#import "ExploreCell.h"
+#import "FMListViewController.h"
+#import "FSAudioStream.h"
+#import "ActivityViewController.h"
+#import "SudiViewController.h"
+#import "TestViewController.h"
+
+@interface ExploreViewController ()
+<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lengthLabel;
+@property (weak, nonatomic) IBOutlet UILabel *currentLabel;
+@property (weak, nonatomic) IBOutlet UIButton *playBtn;
+@property (nonatomic,strong)NSMutableArray *dataArr;
+
+//@property (nonatomic,strong)ExploreHeaderView *headerView;
+@property (nonatomic,strong)NSMutableArray *fmlistArr;
+@property (nonatomic,strong)NSDictionary *testDict;
+
+@property (nonatomic,assign)NSInteger type;
+@property (nonatomic,copy)NSString *fmurl;
+
+@property (nonatomic,strong)FSAudioStream *audioStream;
+@property (weak, nonatomic) IBOutlet UISlider *sliderView;
+@property (nonatomic,strong)NSTimer *myTimer;
+@end
+
+@implementation ExploreViewController
+-(NSTimer *)myTimer{
+    if (!_myTimer) {
+        _myTimer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(updateSlider) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_myTimer forMode:NSRunLoopCommonModes];
+    }
+    return _myTimer;
+}
+-(FSAudioStream *)audioStream{
+    if (!_audioStream) {
+        _audioStream = [LJHttpManager audioStream];
+       //[_audioStream playFromURL:];
+        
+    }
+    return _audioStream;
+    
+}
+-(NSDictionary *)testDict{
+    if (!_testDict) {
+        _testDict = [NSDictionary new];
+    }
+    return _testDict;
+}
+
+-(NSMutableArray *)fmlistArr{
+    if (!_fmlistArr) {
+        _fmlistArr = [NSMutableArray new];
+    }
+    return _fmlistArr;
+}
+-(NSMutableArray *)dataArr{
+    if (!_dataArr) {
+        _dataArr = [NSMutableArray new];
+    }
+    return _dataArr;
+}
+#pragma mark-生命周期
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.type = 1;
+    //self.tabBarController.tabBar.hidden = YES;
+    // Do any additional setup after loading the view.
+    [self createHeaderView];
+    [self requestData];
+    
+}
+#pragma mark-网络数据相关
+- (void)requestData{
+    [LJHttpManager get:KACTIVITY_URL parameters:nil complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            if (self.tableView.header.isRefreshing) {
+                [self.dataArr removeAllObjects];
+            }
+            for (NSDictionary *dict in responseObject[@"data"]) {
+                ActivityModel *mode = [[ActivityModel alloc] initWithDictionary:dict error:nil];
+                [self.dataArr addObject:mode];
+            }
+            [self.tableView.header endRefreshing];
+            [self.tableView reloadData];
+        }
+    }];
+//    [LJHttpManager get:KFMLIST_URL parameters:nil complement:^(id responseObject, NSError *error) {
+//        
+//    }];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"ExplorePlist" ofType:@"plist"];
+    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:path];
+    //NSLog(@"%@",dict);
+    self.testDict = dict;
+    
+}
+#pragma mark-头部视图
+- (void)createHeaderView{
+    self.tableView.header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [self requestData];
+    }];
+    dispatch_queue_t cusQueue = dispatch_queue_create("myQueue", NULL);
+    dispatch_async(cusQueue, ^{
+        [LJHttpManager get:KFMLIST_URL parameters:nil complement:^(id responseObject, NSError *error) {
+            if (error) {
+                NSLog(@"error = %@",error);
+            } else {
+                for (NSDictionary *dict in responseObject[@"data"]) {
+                    FMListModel *mode = [[FMListModel alloc] initWithDictionary:dict error:nil];
+                    [self.fmlistArr addObject:mode];
+                }
+                dispatch_async(cusQueue, ^{
+                    FMListModel *fenleiMode;
+                    do {
+                        fenleiMode = self.fmlistArr[arc4random() % (self.fmlistArr.count)];
+                    } while (fenleiMode.fmidlist.count == 0);
+                    [LJHttpManager get:KFMDETAIL_URL parameters:@{@"fmid":[fenleiMode.fmidlist[arc4random() % (fenleiMode.fmidlist.count)] userId],@"fenleiid":fenleiMode.userId} complement:^(id responseObject, NSError *error) {
+                        if (error) {
+                            NSLog(@"error = %@",error);
+                        } else {
+                            FMModel *detailMode = [[FMModel alloc] initWithDictionary:responseObject[@"data"] error:nil];
+                            //[self.headerView refreshUI:detailMode];
+                            self.titleLabel.text = detailMode.list.title;
+                            self.lengthLabel.text = detailMode.mp3length;
+                            NSArray *arr = [detailMode.mp3length componentsSeparatedByString:@":"];
+                            self.sliderView.maximumValue = [arr[0] intValue] * 60 + [arr[1] intValue];
+                            self.headerImageView.layer.cornerRadius = 35;
+                            [LJHttpManager setImageView:self.headerImageView withUrl:detailMode.list.photo];
+                            self.fmurl = detailMode.list.fmurl;
+                        }
+                        
+                    }];
+                    
+                });
+
+            }
+        }];
+
+    });
+    
+}
+-(void)updateHeaderViewWithMode:(FMModel *)mode{
+    self.titleLabel.text = mode.list.title;
+    self.lengthLabel.text = mode.mp3length;
+    NSArray *arr = [mode.mp3length componentsSeparatedByString:@":"];
+    self.sliderView.maximumValue = [arr[0] intValue] * 60 + [arr[1] intValue];
+    self.headerImageView.layer.cornerRadius = 35;
+    [LJHttpManager setImageView:self.headerImageView withUrl:mode.list.photo];
+    self.fmurl = mode.list.fmurl;
+    self.playBtn.selected = self.audioStream.isPlaying;
+    [self.myTimer fire];
+}
+#pragma mark-UITableView代理方法
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (self.type == 1) {
+        return self.dataArr.count;
+    } else {
+        return 4;
+    }
+    
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.type == 1) {
+        return 90;
+    } else {
+        return 35;
+    }
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.type == 1) {
+        ActivityCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActivityCell"];
+        [cell refreshUI:self.dataArr[indexPath.row]];
+        return cell;
+
+    } else {
+        ExploreCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ExploreCell"];
+        if (self.type == 2) {
+            [cell refreshUI:self.testDict[@"test"][indexPath.row]];
+        } else {
+            [cell refreshUI:self.testDict[@"speed"][indexPath.row]];
+        }
+        return cell;
+    }
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.type == 1) {
+        ActivityViewController *ctl = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ActivityViewController"];
+        ctl.activityId = [self.dataArr[indexPath.row] userId];
+        [self.navigationController pushViewController:ctl animated:YES];
+    } else if (self.type == 3) {
+        SudiViewController *ctl = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SudiViewController"];
+        ctl.link = [NSString stringWithFormat:@"%@/essaylist%ld/page",KSUDI_URL,indexPath.row + 1];
+        ctl.title = self.testDict[@"speed"][indexPath.row][@"name"];
+        [self.navigationController pushViewController:ctl animated:YES];
+    } else if (self.type == 2) {
+        TestViewController *ctl = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"TestViewController"];
+        ctl.typeId = [NSString stringWithFormat:@"%ld",indexPath.row + 1];
+        [self.navigationController pushViewController:ctl animated:YES];
+        
+    }
+}
+#pragma mark-btn点击事件
+- (IBAction)playAction:(UIButton *)sender {
+    if ([self.fmurl isEqualToString:[LJHttpManager audioStreamPlayFromUrl:nil]]) {
+        if (!self.audioStream.isPlaying) {
+            [self.audioStream play];
+        } else {
+            [self.audioStream pause];
+        }
+
+    } else {
+        [LJHttpManager audioStreamPlayFromUrl:self.fmurl];
+        [self.myTimer fire];
+    }
+        //NSLog(@"minute = %d,second = %d",self.audioStream.duration.minute,self.audioStream.duration.second);
+    sender.selected = !sender.selected;
+    
+}
+- (IBAction)pushToFMList:(id)sender {
+    FMListViewController *ctl = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"FMLIST"];
+    ctl.dataArr = [self.fmlistArr mutableCopy];
+    ctl.title = @"心晴FM";
+    [self.navigationController pushViewController:ctl animated:YES];
+}
+- (IBAction)changeTableCell:(UIButton *)sender {
+    for (NSInteger i = 11; i < 14; i ++) {
+        UIButton *btn = (UIButton *)[self.view viewWithTag:i];
+        btn.selected = NO;
+    }
+    sender.selected = !sender.selected;
+    self.type = sender.tag - 10;
+    [self.tableView reloadData];
+}
+
+- (void)updateSlider{
+    [self.sliderView setValue:(self.audioStream.currentTimePlayed.minute * 60 + self.audioStream.currentTimePlayed.second) animated:YES];
+    self.currentLabel.text = [NSString stringWithFormat:@"%d:%d",self.audioStream.currentTimePlayed.minute,self.audioStream.currentTimePlayed.second];
+    self.playBtn.selected = self.audioStream.isPlaying;
+}
+- (IBAction)changeFM:(UISlider *)sender {
+    
+    FSStreamPosition position = {sender.value / 60 ,(int)sender.value % 60};
+    [self.audioStream seekToPosition:position];
+    
+}
+- (IBAction)nextFM:(id)sender {
+    FMListModel *fenleiMode = self.fmlistArr[arc4random() % self.fmlistArr.count];
+    [LJHttpManager get:KFMDETAIL_URL parameters:@{@"fmid":[fenleiMode.fmidlist[arc4random() % fenleiMode.fmidlist.count] userId],@"fenleiid":fenleiMode.userId} complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            FMModel *detailMode = [[FMModel alloc] initWithDictionary:responseObject[@"data"] error:nil];
+            //[self.headerView refreshUI:detailMode];
+            self.titleLabel.text = detailMode.list.title;
+            self.lengthLabel.text = detailMode.mp3length;
+            NSArray *arr = [detailMode.mp3length componentsSeparatedByString:@":"];
+            self.sliderView.maximumValue = [arr[0] intValue] * 60 + [arr[1] intValue];
+            self.headerImageView.layer.cornerRadius = 35;
+            [LJHttpManager setImageView:self.headerImageView withUrl:detailMode.list.photo];
+            self.fmurl = detailMode.list.fmurl;
+            [LJHttpManager audioStreamPlayFromUrl:self.fmurl];
+        }
+        
+    }];
+
+}
+
+
+@end

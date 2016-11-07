@@ -1,0 +1,92 @@
+//
+//  HomeViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "HomeViewController.h"
+#import "HomeTableViewCell.h"
+#import "HotProblemCell.h"
+#import "RollPhotoModel.h"
+#import "ZiXunModel.h"
+#import "HotProblemModel.h"
+#import "MJRefresh.h"
+#import "RollPhotoView.h"
+
+
+@interface HomeViewController ()
+<UITableViewDataSource,UITableViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,strong)NSMutableArray *photoArr;
+@end
+
+@implementation HomeViewController
+-(NSMutableArray *)photoArr{
+    if (!_photoArr) {
+        _photoArr = [NSMutableArray new];
+    }
+    return _photoArr;
+}
+#pragma mark-生命周期
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    //[self requestData];
+    [self createRefresh];
+}
+#pragma mark-网络数据相关
+- (void)requestData{
+    [LJHttpManager get:KROLLPHOTO_URL parameters:nil complement:^(id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"error = %@",error);
+        } else {
+            NSLog(@"%@",responseObject);
+            for (NSDictionary *dict in responseObject[@"data"]) {
+                RollPhotoModel *photoMode = [[RollPhotoModel alloc] initWithDictionary:dict error:nil];
+                [self.photoArr addObject:photoMode];
+            }
+        }
+    }];
+}
+#pragma mark-上拉刷新
+- (void)createRefresh{
+    RollPhotoView *view = [[NSBundle mainBundle] loadNibNamed:@"RollPhotoView" owner:self options:0][0];
+    view.frame = CGRectMake(0, 0, KMainScreenWidth, KMainScreenWidth/2);
+    self.tableView.tableHeaderView = view;
+    self.tableView.header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [self requestData];
+    }];
+}
+#pragma mark-头部视图
+
+#pragma mark-UITableView代理方法
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    
+    return nil;
+}
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (section == 0) {
+        return 1;
+    } else {
+      return 4;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        HomeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HomeTableViewCell"];
+        return cell;
+    } else {
+        HotProblemCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HotProblemCell"];
+        return cell;
+    }
+    
+}
+
+
+@end

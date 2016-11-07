@@ -1,0 +1,27 @@
+//
+//  ExploreViewController.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/21.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "ExploreViewController.h"
+
+@interface ExploreViewController ()
+
+@end
+
+@implementation ExploreViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+}
+
+- (IBAction)testAction:(UIButton *)sender {
+    sender.selected = !sender.selected;
+}
+
+
+@end

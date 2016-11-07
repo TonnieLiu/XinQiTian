@@ -1,0 +1,23 @@
+//
+//  CondisPlayCell.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "CondisPlayCell.h"
+
+@interface CondisPlayCell ()
+@property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+
+@end
+
+@implementation CondisPlayCell
+-(void)refreshUI:(ZiXunModel *)mode{
+    [LJHttpManager setImageView:self.iconImageView withUrl:mode.photo];
+    self.iconImageView.layer.cornerRadius = 25;
+    self.nameLabel.text = mode.name;
+}
+@end

@@ -1,0 +1,40 @@
+//
+//  HomeTableViewCell.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/23.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "HomeTableViewCell.h"
+#import "CondisPlayCell.h"
+
+@interface HomeTableViewCell ()
+<UICollectionViewDataSource,UICollectionViewDelegate>
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+
+@end
+
+@implementation HomeTableViewCell
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+#pragma mark-UICollectionViewDelegate
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return 10;
+}
+
+// The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    CondisPlayCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CondisPlayCell" forIndexPath:indexPath];
+    return cell;
+}
+
+@end

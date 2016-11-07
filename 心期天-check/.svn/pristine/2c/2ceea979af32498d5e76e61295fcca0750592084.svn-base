@@ -1,0 +1,46 @@
+//
+//  ExploreHeaderView.m
+//  心期天
+//
+//  Created by qianfeng on 15/10/26.
+//  Copyright (c) 2015年 QF. All rights reserved.
+//
+
+#import "ExploreHeaderView.h"
+
+@interface ExploreHeaderView ()
+@property (weak, nonatomic) IBOutlet UIImageView *headImageView;
+@property (weak, nonatomic) IBOutlet UILabel *nowTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lengthLabel;
+@property (weak, nonatomic) IBOutlet UILabel *title;
+@property (weak, nonatomic) IBOutlet UIProgressView *progressView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+
+@property (nonatomic,strong)FMDetailModel *detailModel;
+@end
+
+@implementation ExploreHeaderView
+-(void)refreshUI:(FMModel *)mode{
+    self.lengthLabel.text = mode.mp3length;
+    self.detailModel = mode.list;
+    self.title.text = self.detailModel.title;
+    self.headImageView.layer.cornerRadius = 35;
+    [LJHttpManager setImageView:self.headImageView withUrl:self.detailModel.photo];
+    
+}
+-(void)awakeFromNib{
+    //self.width.constant = KMainScreenWidth;
+}
+- (IBAction)playAction:(UIButton *)sender {
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        
+    }
+}
+- (IBAction)tableViewAction:(UIButton *)sender {
+}
+- (IBAction)psuhToList:(id)sender {
+}
+
+
+@end
